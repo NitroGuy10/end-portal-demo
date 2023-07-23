@@ -71,8 +71,15 @@
         }
 
         // Load images
-        const starsImage = document.createElement("img");
-        starsImage.src = "starsRed.png";
+        //const starsImage = document.createElement("img");
+        //starsImage.src = "starsRed.png";
+        // Dumb stupid annoying stupid annoying dumb Safari doesn't support canvas filters
+        const starsImage1 = document.createElement("img");
+        starsImage1.src = "stars1.png";
+        const starsImage2 = document.createElement("img");
+        starsImage2.src = "stars2.png";
+        const starsImage3 = document.createElement("img");
+        starsImage3.src = "stars3.png";
         const starsWidth = 500;
         const starsHeight = 500;
         const overlayImage = document.createElement("img");
@@ -92,33 +99,36 @@
         // Create star layers
         let layers = [];
         layers.push({
+            image: starsImage1,
             x: 0,
             y: 0,
             xVel: 0.04,
             yVel: 0.071,
-            colorHSV: [180, 100, 100],
-            skewX: 0.8,
-            skewY: 0,
+            //colorHSV: [180, 100, 100],
+            //skewX: 0.8,
+            //skewY: 0,
             scale: 1
         });
         layers.push({
+            image: starsImage2,
             x: 0,
             y: 0,
             xVel: -0.015,
             yVel: 0.02,
-            colorHSV: [150, 182, 100],
-            skewX: 0.4,
-            skewY: 0,
+            //colorHSV: [150, 182, 100],
+            //skewX: 0.4,
+            //skewY: 0,
             scale: 0.7,
         });
         layers.push({
+            image: starsImage3,
             x: 0,
             y: 0,
             xVel: 0.01,
             yVel: -0.01,
-            colorHSV: [220, 100, 100],
-            skewX: 0.2,
-            skewY: 0,
+            //colorHSV: [220, 100, 100],
+            //skewX: 0.2,
+            //skewY: 0,
             scale: 1.2,
         });
 
@@ -178,8 +188,8 @@
                 layerTrueX = modulo(layerTrueX, starsWidth);
                 layerTrueY = modulo(layerTrueY, starsHeight);
                 
-
-                ctx.filter = `hue-rotate(${layer.colorHSV[0]}deg) saturate(${layer.colorHSV[1]}%) brightness(${layer.colorHSV[2]}%)`;
+                // Dumb stupid annoying stupid annoying dumb Safari doesn't support canvas filters
+                //ctx.filter = `hue-rotate(${layer.colorHSV[0]}deg) saturate(${layer.colorHSV[1]}%) brightness(${layer.colorHSV[2]}%)`;
 
                 // Draw layer four times to cover the whole canvas
                 for (let tileX = 0; tileX < 2; tileX++)
@@ -193,7 +203,7 @@
                         //ctx.rotate(Math.atan2(mouseOffsetY - canvasHeight / 2, mouseOffsetX - canvasWidth / 2));
                         
                         //ctx.transform(1, layer.skewX, layer.skewY, 1, 0, 0);
-                        ctx.drawImage(starsImage, 0, 0, starsWidth, starsHeight);
+                        ctx.drawImage(layer.image, 0, 0, starsWidth, starsHeight);
                         ctx.resetTransform();
                     }
                 }
