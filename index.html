@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Demo</title>
+
+    <style>
+        body {
+            font-size: 60px;
+            font-family: sans-serif;
+        }
+        canvas {
+            background-color: black;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        #content {
+            margin: 0 auto;
+            width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h2>Portal Demo</h2>
+        <p>Hey, pssst! If you scroll down a bit more, you'll be able to see the portal!</p>
+        <p>It's made in pure HTML and JavaScript!</p>
+        <p>No libraries or frameworks necessary!</p>
+        <p>Ok, the portal is a bit further down...</p>
+        <p>Keep going...</p>
+        <p>Almost there...</p>
+        <p>Just a bit longer...</p>
+        <p>I promise you'll see it soon!</p>
+        <p>Keep on going...</p>
+        <p>Just a bit more...</p>
+        <p>Here it is!</p>
+        <canvas id="portal-canvas-1" width="600" height="600"></canvas>
+        <p>Holy crap! It's a portal!</p>
+        <p>It's so cool!</p>
+        <p>It's so awesome!</p>
+        <p>It's so amazing!</p>
+        <p>It's so epic!</p>
+        <p>It's so incredible!</p>
+        <p>It's so fantastic!</p>
+        <p>It's so unbelievable!</p>
+        <p>It's so mind-blowing!</p>
+        <p>It's so mind-boggling!</p>
+        <p>It's so mind-bending!</p>
+        <p>It's so mind-blowingly mind-bogglingly mind-bendingly mind-blowing!</p>
+        <p>It's so mind-blowingly mind-bogglingly mind-bendingly mind-blowingly mind-bogglingly mind-bendingly mind-blowing!</p>
+        <p>It's so mind-blowingly mind-bogglingly mind-bendingly mind-blowingly mind-bogglingly mind-bendingly mind-blowingly mind-bogglingly mind-bendingly mind-blowing!</p>
+        <p>Ok, I'm done here.</p>
+    </div>
+
+    <script>
+        // Modulo that works with negative numbers
+        function modulo(n, d)
+        {
+            return ((n % d) + d) % d;
+        }
+
+        // Load images
+        const starsImage = document.createElement("img");
+        starsImage.src = "starsRed.png";
+        const starsWidth = 500;
+        const starsHeight = 500;
+        const overlayImage = document.createElement("img");
+        overlayImage.src = "overlay.png";
+        const overlayWidth = 600;
+        const overlayHeight = 600;
+
+        // Get canvas and its context
+        const canvas = document.getElementById("portal-canvas-1");
+        const ctx = canvas.getContext("2d");
+        const canvasWidth = 300;
+        const canvasHeight = 300;
+        const canvasOffsetX = -starsWidth - 20;
+        const canvasOffsetY = -starsHeight - 20;
+        const canvasScale = 2;
+
+        // Create star layers
+        let layers = [];
+        layers.push({
+            x: 0,
+            y: 0,
+            xVel: 0.04,
+            yVel: 0.071,
+            colorHSV: [180, 100, 100],
+            skewX: 0.8,
+            skewY: 0,
+            scale: 1
+        });
+        layers.push({
+            x: 0,
+            y: 0,
+            xVel: -0.015,
+            yVel: 0.02,
+            colorHSV: [150, 182, 100],
+            skewX: 0.4,
+            skewY: 0,
+            scale: 0.7,
+        });
+        layers.push({
+            x: 0,
+            y: 0,
+            xVel: 0.01,
+            yVel: -0.01,
+            colorHSV: [220, 100, 100],
+            skewX: 0.2,
+            skewY: 0,
+            scale: 1.2,
+        });
+
+        // Mouse position stuff
+        let mousePosX = 0;
+        let mousePosY = 0;
+        let mouseOffsetX = 0;
+        let mouseOffsetY = 0;
+        window.addEventListener("mousemove", (event) => {
+            mousePosX = event.clientX;
+            mousePosY = event.clientY;
+        });
+
+        // Scroll position stuff
+        let scrollPosY = 0;
+        let scrollOffsetY = 0;
+        window.addEventListener("scroll", (event) => {
+            scrollPosY = window.scrollY;
+        });
+
+        let previousTime = Date.now();
+        function draw()
+        {
+            // Calculate deltaTime
+            const currentTime = Date.now();
+            const deltaTime = currentTime - previousTime;
+            previousTime = currentTime;
+
+            // Lerp mouseoffset to mousepos over time, using deltaTime
+            // https://youtu.be/yGhfUcPjXuE?t=1014
+            const blend = 1 - (0.5 ** (deltaTime * 0.008));
+            mouseOffsetX = mouseOffsetX + (mousePosX - mouseOffsetX) * blend;
+            mouseOffsetY = mouseOffsetY + (mousePosY - mouseOffsetY) * blend;
+
+            // Lerp scrollOffset to scrollPos over time, using deltaTime
+            const blend2 = 1 - (0.5 ** (deltaTime * 0.008));
+            scrollOffsetY = scrollOffsetY + (scrollPosY - scrollOffsetY) * blend2;
+            
+            // Draw stars
+            ctx.resetTransform();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < layers.length; i++)
+            {
+                const layer = layers[i];
+
+                // Update layer position
+                layer.x += layer.xVel * deltaTime;
+                layer.y += layer.yVel * deltaTime;
+                layer.x = modulo(layer.x, starsWidth);
+                layer.y = modulo(layer.y, starsHeight);
+
+                let layerTrueX = layer.x;
+                let layerTrueY = layer.y;
+                layerTrueX += mouseOffsetX / window.innerWidth * 50;
+                layerTrueY += mouseOffsetY / window.innerHeight * 50;
+                layerTrueY += scrollOffsetY / window.innerHeight * 500;
+                layerTrueX = modulo(layerTrueX, starsWidth);
+                layerTrueY = modulo(layerTrueY, starsHeight);
+                
+
+                ctx.filter = `hue-rotate(${layer.colorHSV[0]}deg) saturate(${layer.colorHSV[1]}%) brightness(${layer.colorHSV[2]}%)`;
+
+                // Draw layer four times to cover the whole canvas
+                for (let tileX = 0; tileX < 2; tileX++)
+                {
+                    for (let tileY = 0; tileY < 2; tileY++)
+                    {
+                        ctx.scale(layer.scale * canvasScale, layer.scale * canvasScale);
+                        ctx.translate(canvasOffsetX + layerTrueX + tileX * starsWidth, canvasOffsetY + layerTrueY + tileY * starsHeight);
+                        
+                        // This isn't the intended effect, but it's cool af
+                        //ctx.rotate(Math.atan2(mouseOffsetY - canvasHeight / 2, mouseOffsetX - canvasWidth / 2));
+                        
+                        //ctx.transform(1, layer.skewX, layer.skewY, 1, 0, 0);
+                        ctx.drawImage(starsImage, 0, 0, starsWidth, starsHeight);
+                        ctx.resetTransform();
+                    }
+                }
+            }
+
+            ctx.drawImage(overlayImage, 0, 0, overlayWidth, overlayHeight);
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
